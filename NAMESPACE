@@ -1,0 +1,14 @@
+useDynLib(moveds)
+importFrom("Rcpp", "evalCpp")
+importFrom("mgcv", "gam")
+importFrom("mgcv", "predict.gam")
+importFrom("mgcv", "s")
+importFrom("graphics", "curve", "hist", "lines", "plot", "rug")
+importFrom("stats", "chisq.test", "cov2cor", "ecdf", "integrate",
+           "ks.test", "nlm", "optimize", "predict", "qnorm",
+           "quantile", "rnorm", "sd", "var")
+S3method("summary", "mds")
+S3method("plot", "mds")
+S3method("logLik", "mds")
+S3method("predict", "mds")
+exportPattern("^[[:alpha:]]+")

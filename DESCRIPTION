@@ -1,0 +1,17 @@
+Package: moveds
+Type: Package
+Title: Fit Distance Sampling Models with Animal Movement 
+Version: 0.1.0
+Author: Richard Glennie 
+Maintainer: Richard Glennie <rg374@st-andrews.ac.uk>
+Description: Fit two-dimensional hazard detection models to distance sampling data with a Brownian motion animal movement model. Animal movement speed can be estimated from telemetry tracks or set to a known constant. 
+License: MIT + file LICENSE
+Depends: R (>= 3.1.0)
+Encoding: UTF-8
+LazyData: true
+Imports: Rcpp, numDeriv, Distance, mgcv
+LinkingTo: Rcpp, RcppArmadillo
+RoxygenNote: 6.1.0
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
