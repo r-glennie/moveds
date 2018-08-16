@@ -1,5 +1,5 @@
 # moveds
-Fits models that acccount for non-responsive, Brownian motion of individuals 
+Fits models that account for non-responsive, Brownian motion of individuals 
 during distance sampling surveys. 
 
 ## Install 
