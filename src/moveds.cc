@@ -258,7 +258,7 @@ arma::rowvec CalcInitialDistribution(const arma::vec num_cells,
   return(initial_phi);
 }
 //' Transform working parameters (for the optimiser) to natural parameters
-//' @param parameter working parameters 
+//' @param working_parameter working parameters 
 //' @param hzfn hazard function type 
 //' @return natural parameters 
 // [[Rcpp::export]]
@@ -347,7 +347,7 @@ double CalcHazard(const double x,
     else {
       // assume cannot detect behind observer
       if (y < 0) return 0;
-      if (x < 1e-10 & y < 1e-10) return arma::datum::inf;
+      if ((x < 1e-10) & (y < 1e-10)) return arma::datum::inf;
       abeta = 0.5 * (parameter(2) - 1.0);
       y1 = y - observer_speed * dt;
       if (y1 < 0) y1 = 0;
@@ -378,16 +378,16 @@ double CalcHazard(const double x,
 }
 //' Computes the probability of survival for each spatial location
 //'
-//'  @param t time step
-//'  @param parameter (scale, shape, diffusion) parameter
-//'  @param num_cells number of cells in (x, y, all) dimensions
-//'  @param delta (dx, dt) vector
-//'  @param strip_size size of strip in (x, y) dimensions
-//'  @param buffer buffer size
-//'  @param observer_speed speed of the observer
-//'  @param type transect type
-//'  @param hzfn hazard function code
-//'  @param nint not used
+//' @param t time step
+//' @param parameter (scale, shape, diffusion) parameter
+//' @param num_cells number of cells in (x, y, all) dimensions
+//' @param delta (dx, dt) vector
+//' @param strip_size size of strip in (x, y) dimensions
+//' @param buffer buffer size
+//' @param observer_speed speed of the observer
+//' @param type transect type
+//' @param hzfn hazard function code
+//' @param nint not used
 //'
 //'  @return row vector of survival probabilities over space
 // [[Rcpp::export]]
@@ -429,16 +429,20 @@ arma::rowvec CalcSurvivalPr(const int t,
   }
   return pr_survive;
 }
+
 //' Thins probability distribution by the proportion detected in each grid cell
 //'
-//'  @param t time step
-//'  @param pr probability distribution over finite grid
-//'  @param parameter (scale, shape, diffusion) parameter
-//'  @param num_cells number of cells in (x, y, all) dimensions
-//'  @param delta (dx, dt) vector
-//'  @param strip_size size of strip in (x, y) dimensions
-//'  @param observer_speed speed of the observer
-//'  @param type transect type
+//' @param t time step
+//' @param pr probability distribution over finite grid
+//' @param parameter (scale, shape, diffusion) parameter
+//' @param num_cells number of cells in (x, y, all) dimensions
+//' @param delta (dx, dt) vector
+//' @param strip_size size of strip in (x, y) dimensions
+//' @param buffer buffer width 
+//' @param observer_speed speed of the observer
+//' @param type transect type
+//' @param hzfn hazard function code 
+//'  
 //'  @return  thinned probability distribution
 // [[Rcpp::export]]
 arma::rowvec Detect(const int t,
@@ -456,6 +460,7 @@ arma::rowvec Detect(const int t,
   pr_survive %= pr;
   return(pr_survive);
 }
+
 //' Compute hazard of each detection within time-step
 //'
 //' @param data (x, y, t) data matrix
@@ -579,21 +584,24 @@ arma::rowvec InTransect(const arma::vec num_cells,
 //'
 //' @param  working_parameter unconstrained version of parameter vector containing
 //'     (detection shape, detection scale, diffusion sd)
+//' @param start start value for parameters on natural scale 
 //' @param  data matrix with (trans id, grid cell,t) distance sampling survey data (assumed to be ordered by transect and time)
-//' @param  trandat matrix with (stripsize(1), numcells in y, totaltimestep, number of observations)
+//' @param  transdat matrix with (stripsize(1), numcells in y, totaltimestep, number of observations)
 //' @param  auxiliary_data vector containing (area x extent, area y extent, strip width, transect_type)
 //' @param  delta vector of (dx, dt) spacetime increments
 //' @param  num_cells number of cells in (total space, x-direction, y-direction)
 //' @param  T total time of survey for longest transect
 //' @param  ymax maximum length of a transect
 //' @param  buffer buffer distance
-//' @param  movement_data: field object where each component represents an individual
+//' @param  movement_data field object where each component represents an individual
 //'   path and contains a matrix where each row is an observed location (x,y,t)
 //' @param fixed_sd if move_method = 2
 //' @param hzfn hazard function code (see ?hazardfns)
-//' @param  move_method: 0 = 2d CDS model, 1 = 2d MDS model (movement estimated),
+//' @param  move_method 0 = 2d CDS model, 1 = 2d MDS model (movement estimated),
 //'    2 = 2d MDS model (movement fixed)
-//' @param  print: if TRUE then print likelihood and parmeters after evaluation
+//' @param  print if TRUE then print likelihood and parmeters after evaluation
+//' @param con parameters are constrained to be between 1/con * start value and 
+//' con * start value 
 //'
 //' @return  negative log-likelihood
 // [[Rcpp::export]]
@@ -740,7 +748,7 @@ double NegativeLogLikelihood(const arma::vec working_parameter,
 //'
 //' @param  working_parameter unconstrained version of parameter vector containing
 //'     (detection shape, detection scale, diffusion sd)
-//' @param  trandat matrix with (stripsize(1), numcells in y, totaltimestep, number of observations)
+//' @param  transdat matrix with (stripsize(1), numcells in y, totaltimestep, number of observations)
 //' @param  auxiliary_data vector containing (area x extent, area y extent, strip width, transect_type)
 //' @param  delta vector of (dx, dt) spacetime increments
 //' @param  num_cells number of cells in (total space, x-direction, y-direction)
@@ -749,7 +757,7 @@ double NegativeLogLikelihood(const arma::vec working_parameter,
 //' @param  buffer buffer distance
 //' @param fixed_sd if move_method = 2
 //' @param hzfn hazard function code (see ?hazardfns)
-//' @param  move_method: 0 = 2d CDS model, 1 = 2d MDS model (movement estimated),
+//' @param  move_method 0 = 2d CDS model, 1 = 2d MDS model (movement estimated),
 //'    2 = 2d MDS model (movement fixed)
 //'
 //' @return  negative log-likelihood
@@ -853,7 +861,8 @@ double GetPenc(const arma::vec working_parameter,
 //'
 //' @param  working_parameter unconstrained version of parameter vector containing
 //'     (detection shape, detection scale, diffusion sd)
-//' @param  trandat matrix with (stripsize(1), numcells in y, totaltimestep, number of observations)
+//' @param range to compute out to in x and y directions 
+//' @param  transdat matrix with (stripsize(1), numcells in y, totaltimestep, number of observations)
 //' @param  auxiliary_data vector containing (area x extent, area y extent, strip width, transect_type)
 //' @param  delta vector of (dx, dt) spacetime increments
 //' @param  num_cells number of cells in (total space, x-direction, y-direction)
