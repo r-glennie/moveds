@@ -57,8 +57,6 @@ Discretise <- function(ds) {
   sy <- floor((ydist + buf) / dx)
   sx <- floor((xdist + buf) / dx)
   if (type == 0) {
-    # if assigned state behind observer, move up one state 
-    sy <- ifelse(sy * dx < ds.data[,4] * obs.speed + buf, sy + 1, sy)
     # round to nearest time inside discrete survey time 
     for (i in 1:nrow(ddata)) {
       tr <- ddata[i, 1]
