@@ -400,7 +400,7 @@ arma::rowvec CalcSurvivalPr(const int t,
                       const double observer_speed,
                       const int type,
                       const int hzfn,
-                      const int nint = 1) {
+                      const int nint = 2) {
 
   arma::rowvec pr_survive = arma::ones<arma::rowvec>(num_cells(0));
   arma::vec observer_position(GetObserverPosition(t * delta(1), strip_size, buffer, delta, type,
@@ -415,11 +415,11 @@ arma::rowvec CalcSurvivalPr(const int t,
       s = x_cell + num_cells(1) * y_cell;
       pr_survive(s) = 0; 
       x = x_cell * delta(0) - observer_position(0);
-      y = y_cell * delta(0) - observer_position(1); 
+      y = y_cell * delta(0) - observer_position(1) + 0.5 * delta(0); 
       for (int i = 0; i < nint; ++i) {
         for (int j = 0; j < nint; ++j) {
           ix = x + (i * delta(0)) / nint; 
-          iy = y + (j * delta(0)) / nint; 
+          iy = y + (j * 0.5 * delta(0)) / nint; 
           pr_survive(s) += CalcHazard(ix, iy, delta(1), observer_speed, parameter, type, hzfn);
         }
       }
