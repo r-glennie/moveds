@@ -141,7 +141,7 @@ CalcHazard <- function(x, y, dt, observer_speed, parameter, type, hzfn) {
 #' @param nint not used
 #'
 #'  @return row vector of survival probabilities over space
-CalcSurvivalPr <- function(t, parameter, num_cells, delta, strip_size, buffer, observer_speed, type, hzfn, nint = 1L) {
+CalcSurvivalPr <- function(t, parameter, num_cells, delta, strip_size, buffer, observer_speed, type, hzfn, nint = 2L) {
     .Call('_moveds_CalcSurvivalPr', PACKAGE = 'moveds', t, parameter, num_cells, delta, strip_size, buffer, observer_speed, type, hzfn, nint)
 }
 
@@ -276,5 +276,52 @@ GetPenc <- function(working_parameter, transdat, auxiliary_data, delta, num_cell
 #' unpack auxiliary data
 GetHist <- function(working_parameter, range, transdat, auxiliary_data, delta, num_cells, T, ymax, buffer, fixed_sd = 0, hzfn = 1L, move_method = 1L) {
     .Call('_moveds_GetHist', PACKAGE = 'moveds', working_parameter, range, transdat, auxiliary_data, delta, num_cells, T, ymax, buffer, fixed_sd, hzfn, move_method)
+}
+
+#' Compute hazard of detection (Hayes-Buckland isotropic hazard)
+#' 
+#' @param x x distance 
+#' @param y y distance 
+#' @param dt time step
+#' @param observer_speed observer speed
+#' @param parameter detection parameters 
+#' @param w truncation width 
+#' @param type transect type 0 = point, 1 = line
+#' @return hazard of detection  
+NULL
+
+#' Get Recorded forward distance once detection occurs 
+#' 
+#' @param x recorded x location 
+#' @param y recorded y location
+#' @param accu_hazard hazard accumulated up to that time 
+#' @param u log random deviate 
+#' @param parameter detection parameters 
+#' 
+#' @return recorded forward distance 
+NULL
+
+#' Get Recorded time once detection occurs 
+#' 
+#' @param x recorded x location 
+#' @param y recorded y location
+#' @param accu_hazard hazard accumulated up to that time 
+#' @param u log random deviate 
+#' @param parameter detection parameters 
+#' 
+#' @return recorded forward distance 
+NULL
+
+#' Simulate distance sampling survey
+#' 
+#' @param true_parameter (detection shape, scale, diffusion sd) 
+#' @param N number of animals 
+#' @param auxiliary_info (region x-extent ,region y-extent, survey time, dt, 
+#' transect type (0 = point, 1 = line), observer_speed, number of transects, half width of transects)
+#' @param dt time step 
+#' @param move = 0 no mvoement, 1 Brownian motion 
+#' @return Outputs csv data file 
+SimulateDsData <- function(true_parameter, N, auxiliary_info, dt, move = 0L) {
+    .Call('_moveds_SimulateDsData', PACKAGE = 'moveds', true_parameter, N, auxiliary_info, dt, move)
 }
 

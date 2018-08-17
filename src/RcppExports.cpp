@@ -260,6 +260,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// SimulateDsData
+int SimulateDsData(arma::vec true_parameter, int N, arma::vec auxiliary_info, double dt, int move);
+RcppExport SEXP _moveds_SimulateDsData(SEXP true_parameterSEXP, SEXP NSEXP, SEXP auxiliary_infoSEXP, SEXP dtSEXP, SEXP moveSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type true_parameter(true_parameterSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type auxiliary_info(auxiliary_infoSEXP);
+    Rcpp::traits::input_parameter< double >::type dt(dtSEXP);
+    Rcpp::traits::input_parameter< int >::type move(moveSEXP);
+    rcpp_result_gen = Rcpp::wrap(SimulateDsData(true_parameter, N, auxiliary_info, dt, move));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_moveds_GetObserverPosition", (DL_FUNC) &_moveds_GetObserverPosition, 6},
@@ -277,6 +292,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_moveds_NegativeLogLikelihood", (DL_FUNC) &_moveds_NegativeLogLikelihood, 16},
     {"_moveds_GetPenc", (DL_FUNC) &_moveds_GetPenc, 11},
     {"_moveds_GetHist", (DL_FUNC) &_moveds_GetHist, 12},
+    {"_moveds_SimulateDsData", (DL_FUNC) &_moveds_SimulateDsData, 5},
     {NULL, NULL, 0}
 };
 
