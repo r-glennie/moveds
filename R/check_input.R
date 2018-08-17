@@ -21,7 +21,7 @@ check.input <- function(ds, move, start, print, level) {
   pass <- TRUE
   if (!is.list(ds) |
       length(ds) != 7 |
-      any(names(ds) != c("data", "transect", "aux", "delta", "buffer", "hazardfn", "move"))) pass <- FALSE
+      !all(names(ds) %in% c("data", "transect", "aux", "delta", "buffer", "hazardfn", "move"))) pass <- FALSE
   if (!pass) {
     stop("ds must be a list of 7 objects with names data, transect, aux, delta, buffer, hazardfn, move.")
   }
