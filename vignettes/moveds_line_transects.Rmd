@@ -308,7 +308,7 @@ boundary of the grid is at a distance where detection probability is very low.
 The second object <code>move</code> contains the movement data.
 
 ```{r mds2d_move}
-move <- list(data = movedat)
+move <- list(data = line_example_movedat)
 ```
 
 If I had no movement data, I could fix the movement parameter to be a specific
@@ -322,7 +322,7 @@ The model is fit simiarly to CDS2D. For starting values, you specific the
 detection parameters and then the movement parameter. If you movement data,
 you can estimate a starting value using the <code>EstDiff</code> function: 
 ```{r estdiff}
-EstDiff(movedat)
+EstDiff(line_example_movedat)
 ```
 
 I fit the model using the <code>mds</code>. This can take time, depending on

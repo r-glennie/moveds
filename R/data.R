@@ -36,7 +36,7 @@
 #'   \item{obs}{sightings with transect, x, y, t records} 
 #'   \item{trans}{entry for each transect surveyed: ID, effort}
 #' }
-"example_mds_point"
+"point_example_dsdat" 
 
 #' Example animal movement data 
 #'
@@ -45,12 +45,12 @@
 #'
 #' @format A data frames with columns (x, y, t)
 #' 
-"point_movedat"
+"point_example_movedat"
 
 #' Example model fits to example_mds_point data 
 #'
 #' A list of cds1d, cds2d, and mds2d models. 
 #'
 #' 
-"example_mds_point_mods"
+"point_example"
 

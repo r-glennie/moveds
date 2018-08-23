@@ -28,7 +28,7 @@ In this vignette, I will take you through a point transect analysis.
 library(moveds)
 ```
 ```{r secret_data_load, echo = FALSE}
-load("point_example.RData")
+data("point_example")
 ```
 ## Distance Data 
 
@@ -40,10 +40,10 @@ the beginning of the surveying the transect that each detection took place.
 I load some simulated point transect data in the required format.  
 
 ```{r load_data}
-data("example_mds_point")
-str(example_mds_point) 
-obs <- example_mds_point$obs
-trans <- example_mds_point$trans
+data("point_example_dsdat")
+str(point_example_dsdat) 
+obs <- point_example_dsdat$obs
+trans <- point_example_dsdat$trans
 ```
 
 The object <code>obs</code> contains the records of detections made during
@@ -101,8 +101,8 @@ plot(simulated.movement.data[[2]][,1:2], type = "b")
 For this analysis, I use simulated tag data on ten individuals, stored
 in the object <code>movedat</code>. 
 ```{r}
-data("example_move_point")
-str(movedat)
+data("point_example_movedat")
+str(point_example_movedat)
 ```
 
 ## 1D CDS
@@ -121,7 +121,7 @@ simple [vignette](http://distancesampling.org/R/vignettes/ducknests.html).
 I take the survey region to have area $1000^2$ distance units.
 ```{r setup_cds1d_data}
 region.table <- data.frame(Region.Label = 1, Area = 1000 * 1000)
-sample.table <- data.frame(Sample.Label = 1:n.transects, Region.Label = 1, Effort = 1)
+sample.table <- data.frame(Sample.Label = trans[,1], Region.Label = 1, Effort = 1)
 obs.table <- data.frame(object = 1:nrow(obs), Region.Label = 1, Sample.Label = obs[, 1])
 ```
 
@@ -160,7 +160,7 @@ that the overall probability of detection in the survey region is `r penc.cds1d`
 The estimated detection function has shape $b=$ `r det.est[1]` and scale $s=$ `r det.est[2]`. 
 You can plot the estimated probability density function (PDF) corresponding to these estimated parameters.
 ```{r plot_cds1d, eval = FALSE}
-plot(cds1d)
+plot(cds1d, pdf = TRUE)
 ```
 ![](point_example_plots/cds1d_pdf.png)
 
@@ -299,21 +299,21 @@ boundary of the grid is at a distance where detection probability is very low.
 The second object <code>move</code> contains the movement data.
 
 ```{r mds2d_move}
-move <- list(data = movedat)
+move <- list(data = point_example_movedat)
 ```
 
 If I had no movement data, I could fix the movement parameter to be a specific
 value. 
 
 ```{r mds2d_nomove, eval = FALSE}
-move <- list(fixed.sd = 2)
+move <- list(fixed.sd = 1)
 ```
 
 The model is fit simiarly to CDS2D. For starting values, you specific the 
 detection parameters and then the movement parameter. If you movement data,
 you can estimate a starting value using the <code>EstDiff</code> function: 
 ```{r estdiff}
-EstDiff(movedat)
+EstDiff(point_example_movedat)
 ```
 
 I fit the model using the <code>mds</code>. This can take time, depending on
