@@ -28,7 +28,7 @@ In this vignette, I will take you through a line transect analysis.
 library(moveds)
 ```
 ```{r secret_data_load, echo = FALSE}
-load("line_example.RData")
+data("line_example")
 ```
 ## Distance Data 
 
@@ -40,10 +40,10 @@ the beginning of the transect that each detection took place.
 I load some simulated line transect data in the required format.  
 
 ```{r load_data}
-data("example_mds_line")
-str(example_mds_line) 
-obs <- example_mds_line$obs
-trans <- example_mds_line$trans
+data("line_example_dsdat")
+str(line_example_dsdat) 
+obs <- line_example_dsdat$obs
+trans <- line_example_dsdat$trans
 ```
 
 The object <code>obs</code> contains the records of detections made during
@@ -105,8 +105,8 @@ plot(simulated.movement.data[[2]][,1:2], type = "b")
 For this analysis, I use simulated tag data on five individuals, stored
 in the object <code>movedat</code>. 
 ```{r}
-data("example_move")
-str(movedat)
+data("line_example_movedat")
+str(line_example_movedat)
 ```
 
 ## 1D CDS
@@ -260,7 +260,7 @@ plot(cds2d, delta = c(2.5, 1))
 ![cds2d picture should be here...](line_example_plots/cds2d_forw.png)
 
 The goodness-of-fit of the model in the perpendicular and forward distance
-can be tested by Pearson's Chi-squared test: 
+can be tested by the Kolmogoriv-Smirnov test: 
 ```{r gof_cds2d, eval = FALSE}
 cds2d.gof <- mds.gof(cds2d, delta = c(2.5, 1))
 ```
@@ -329,7 +329,7 @@ I fit the model using the <code>mds</code>. This can take time, depending on
 your computer and software setup. If you just want to look at the fitted model, 
 you can load all the fitted models: 
 ```{r load_all_mods, eval = FALSE}
-data("example_mds_line_mods")
+data("line_example")
 ```
 
 Fitting the model: 
@@ -379,7 +379,7 @@ is distorted by the movement.
 
 When using the isotropic hazard function, the function <code>s2sigmab</code>
 can be used to convert the estimated $s$ and $d$ parameters from the <code>mds</code>
-function to the $b$ and $sigma$ parameters reported in the <code>Distance</code> 
+function to the $b$ and $\sigma$ parameters reported in the <code>Distance</code> 
 package. 
 
 The estimated detection functions from the CDS and MDS methods are markedly different: 

@@ -11,7 +11,7 @@
 #'       $fixed.sd fixed diffusion paramter, must be supplied and only used when ds$move = 2
 #'       $data list with matrix for each individual tagged with (x, y, t) observations in each row, required for ds$move = 1
 #' @param start named initial values for (detection scale, detection shape, diffusion rate (ds$move == 1))
-#' @param print FALSE by default, if TRUE then likelihood and parameters are printed after each evaluation
+#' @param print FALSE by default, if TRUE then useful output is printed
 #' @param level confidence interval level, default is 0.95
 #' @param ... additional arguments to be passed to nlm (the optimisation routine)
 #'
@@ -32,9 +32,10 @@ mds <- function(ds,
                 print = FALSE,
                 level = 0.95,
                 ...) {
+  if (print) cat("Checking input........")
   check.input(ds, move, start, print, level)
-  # save start time
-  start.time <- Sys.time();
+  if (print) cat("done\n")
+
   # initial parameters
   move.method <- ds$move
   sdpar <- 0
@@ -52,14 +53,19 @@ mds <- function(ds,
             Reduce time-step or increase grid size.")
   }
   # discretise transects and data
+  if (print) cat("Discretising space and time.......")
   dis <- Discretise(ds)
   dtrans <- dis$dtrans
   ddata <- dis$ddata
+  if (print) cat("done\n")
   fixed.sd <- 0
   if (move.method == 2) {
     fixed.sd <- move$fixed.sd
   }
   # if asked to print, print headers
+  # save start time
+  start.time <- Sys.time();
+  if (print) cat("Fitting model.......\n")
   if (print) cat("llk", "    ", "parameters", "\n")
   ini.par <- Natural2Working(start, ds$hazardfn)
   mod <- suppressWarnings(nlm(NegativeLogLikelihood,
@@ -81,11 +87,15 @@ mds <- function(ds,
                 print = print,
                 con = 100, 
                 ...))
+  end.time <- Sys.time()
+  time.taken <- difftime(end.time, start.time)
+  if (print) cat("Model fitting completed in ", time.taken, attr(time.taken, "units"), "\n")
   # converged?
   if (mod$code != 1) warning("Model failed to converge with nlm code ", mod$code, ".")
   # get estimates
   estimate <- Working2Natural(mod$estimate, ds$hazardfn)
   # estimate covered area and abundance
+  if (print) cat("Estimating abundance......")
   penc <- GetPenc(mod$estimate,
                   dtrans,
                   ds$aux,
@@ -99,7 +109,9 @@ mds <- function(ds,
                   move.method)
   n <- nrow(ddata)
   N <- n / penc
+  if (print) cat("done\n")
   # VARIANCE ESTIMATION
+  if (print) cat("Estimating variance......")
   # variance matrix
   V <- solve(mod$hessian)
   # sds
@@ -123,7 +135,9 @@ mds <- function(ds,
   var.penc <- t(grad.penc) %*% V %*% grad.penc
   # variance of N using delta method
   var.N <- as.numeric(N^2 * (var.n / n^2 + var.penc / penc^2))
+  if (print) cat("done\n")
   # cis
+  if (print) cat("Computing confidence intervals......")
   alpha <- 1 - level
   lower <- Working2Natural(mod$estimate - qnorm(1 - alpha / 2) * sds, ds$hazardfn)
   upper <- Working2Natural(mod$estimate + qnorm(1 - alpha / 2) * sds, ds$hazardfn)
@@ -132,7 +146,9 @@ mds <- function(ds,
   var.D <- var.N / A^2
   N.ci <- N + c(-1, 1) * qnorm(1 - alpha / 2) * sqrt(var.N)
   D.ci <- N.ci / A
+  if (print) cat("done\n")
   # calc AIC
+  if (print) cat("Preparing results......")
   aic <- 2 * mod$minimum + 2 * length(estimate)
   # prepare results
   avg.pdet <-penc / k
@@ -141,12 +157,11 @@ mds <- function(ds,
                     LCL = c(lower, N.ci[1], D.ci[1]),
                     UCL = c(upper, N.ci[2], D.ci[2]))
   rownames(res) <- c(parnames, "N", "D")
-  end.time <- Sys.time()
-  time.taken <- difftime(end.time, start.time, units = "mins")
-  cat("Model fitting completed in ", time.taken, "minutes.\n")
+ 
   res = list(result = res, cor = cov2cor(V), penc = avg.pdet, AIC = aic, fit = mod,
              ds = ds, move = move, level = level)
   class(res) <- c(class(res), "mds")
+  if (print) cat("done\n")
   return(res)
 }
 
