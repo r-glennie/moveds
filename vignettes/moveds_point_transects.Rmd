@@ -250,8 +250,7 @@ plot(cds2d)
 ```
 ![](point_example_plots/cds2d_pdf.png)
 
-The goodness-of-fit of the model in the $x$ and $y$ directions
-can be tested by Pearson's Chi-squared test: 
+The goodness-of-fit of the model by the Kolmogoriv-Smirnov test: 
 ```{r gof_cds2d, eval = FALSE}
 cds2d.gof <- mds.gof(cds2d)
 ```
