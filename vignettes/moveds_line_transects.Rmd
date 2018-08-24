@@ -29,6 +29,12 @@ library(moveds)
 ```
 ```{r secret_data_load, echo = FALSE}
 data("line_example")
+cds1d <- line_example$cds1d
+cds2d <- line_example$cds2d
+mds2d <- line_example$mds2d
+cds1d.gof <- line_example$cds1d.gof
+cds2d.gof <- line_example$cds2d.gof
+mds2d.gof <- line_example$mds2d.gof
 ```
 ## Distance Data 
 
@@ -396,7 +402,7 @@ g.cds2d <- g(x, est.cds2d[1], est.cds2d[2])
 est.mds2d <- s2sigmab(mds2d$result[1,1], mds2d$result[2,1])
 g.mds2d <- g(x, est.mds2d[1], est.mds2d[2])
 
-plot(x, g.cds1d, type = "l", xlab = "Perpendicular Distance", ylab = "Detection Probability")
+plot(x, g.cds1d, type = "l", xlab = "Perpendicular Distance", ylab = "Detection Probability", ylim = c(0, 1))
 lines(x, g.cds2d, col = "red")
 lines(x, g.mds2d, col = "blue")
 

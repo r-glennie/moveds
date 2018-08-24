@@ -3,6 +3,7 @@
 #' @param mod fitted mds model (returned from mds function)
 #' @param delta use a different (dx, dt); otherwise uses mod$ds$delta
 #' @param yquant quantile of forward distance to truncate at (for robustness to outliers)
+#' @param nint number of integration points used to approximate PDF and CDF
 #' @return plots of empirical and estimated CDFs for distances and list of outputs from ks.test function 
 #' @export
 mds.gof <- function(mod, delta = NULL, yquant = 0.95, nint = 1000) {
@@ -39,7 +40,7 @@ mds.gof <- function(mod, delta = NULL, yquant = 0.95, nint = 1000) {
   Nperp <- floor(2 * range[1] / ds$delta[1])
   Nforw <- floor(range[2] / ds$delta[1])
   buf <- floor(ds$buffer / ds$delta[1])
-  pdfm <- matrix(pdf, nr = dis$numcells[2], Nforw)
+  pdfm <- matrix(pdf, nrow = dis$numcells[2], Nforw)
   pdfm <- pdfm[buf:(Nperp+buf),]
   # line transect
   if (ds$aux[5] == 0) {

@@ -29,6 +29,12 @@ library(moveds)
 ```
 ```{r secret_data_load, echo = FALSE}
 data("point_example")
+cds1d <- point_example$cds1d
+cds2d <- point_example$cds2d
+mds2d <- point_example$mds2d
+cds1d.gof <- point_example$cds1d.gof
+cds2d.gof <- point_example$cds2d.gof
+mds2d.gof <- point_example$mds2d.gof
 ```
 ## Distance Data 
 
