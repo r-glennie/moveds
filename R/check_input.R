@@ -109,8 +109,7 @@ check.input <- function(ds, move, start, print, level) {
     movedat <- move$data
     pass <- TRUE
     if (!is.list(movedat) | 
-        any(sapply(movedat, ncol) != 3) |
-        !any(sapply(movedat, FUN = function(x){sapply(x, is.numeric)}))) pass <- FALSE
+        any(sapply(movedat, ncol) != 3)) pass <- FALSE
     if (!pass) {
       stop("move$data must be a list of objects; each element of the list must have three
            columns (x,y,t), all numeric.")
