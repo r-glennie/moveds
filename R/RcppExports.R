@@ -141,7 +141,7 @@ CalcHazard <- function(x, y, dt, observer_speed, parameter, type, hzfn) {
 #' @param nint not used
 #'
 #'  @return row vector of survival probabilities over space
-CalcSurvivalPr <- function(t, parameter, num_cells, delta, strip_size, buffer, observer_speed, type, hzfn, nint = 2L) {
+CalcSurvivalPr <- function(t, parameter, num_cells, delta, strip_size, buffer, observer_speed, type, hzfn, nint = 4L) {
     .Call('_moveds_CalcSurvivalPr', PACKAGE = 'moveds', t, parameter, num_cells, delta, strip_size, buffer, observer_speed, type, hzfn, nint)
 }
 

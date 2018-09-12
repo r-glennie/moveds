@@ -64,7 +64,7 @@ check.input <- function(ds, move, start, print, level) {
       any(delta < 0) | 
       delta[1] > aux[1] | 
       delta[1] > aux[2] | 
-      delta[2] > min(trans[,2])) pass <- FALSE
+      delta[2] > min(trans[,2]) /aux[4]) pass <- FALSE
   if (!pass) {
     stop("ds$delta must be a vector of length 2 with first element the spatial 
          discretisation being between 0 and the region size in the x,y directions; the
