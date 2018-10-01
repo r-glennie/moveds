@@ -49,7 +49,7 @@ mds.penc <- function(ds,
   # if asked to print, print headers
   # save start time
   start.time <- Sys.time();
-  if (print) cat("Computing likelihood.......\n")
+  if (print) cat("Computing detection probability.......\n")
   ini.par <- Natural2Working(par, ds$hazardfn)
   penc <- GetPenc(ini.par,
                   dtrans,
