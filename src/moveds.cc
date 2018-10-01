@@ -417,14 +417,14 @@ arma::rowvec CalcSurvivalPr(const int t,
       x = x_cell * delta(0) - observer_position(0);
       y = y_cell * delta(0) - observer_position(1); 
       for (int i = 0; i < nint; ++i) {
-        //for (int j = 0; j < nint; ++j) {
+        for (int j = 0; j < nint; ++j) {
           ix = x + (i * delta(0)) / nint; 
-          //iy = y + (j * delta(0)) / nint; 
+          iy = y + (j * delta(0)) / nint; 
           pr_survive(s) += CalcHazard(ix, y, delta(1), observer_speed, parameter, type, hzfn);
-        //}
+        }
       }
-      //pr_survive(s) /= 1.0*nint*nint; 
-      pr_survive(s) /= 1.0*nint; 
+      pr_survive(s) /= 1.0*nint*nint; 
+      //pr_survive(s) /= 1.0*nint; 
       pr_survive(s) = exp(-pr_survive(s)); 
     }
   }
