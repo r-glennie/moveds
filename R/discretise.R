@@ -63,8 +63,6 @@ Discretise <- function(ds) {
       tr.t <- min(dtrans[dtrans[, 1] == tr, 3])
       if (floor(ddata[i, 5]/dt) > tr.t) ddata[i, 5] <- tr.t * dt
     }
-    # set observer position with respect to grid point 
-    ddata[,5] <- (sy * dx - ds.data[,3] - buf) / obs.speed
   }
   sy[sy >= Ny] <- Ny - 1 
   sx[sx >= Nx] <- Nx - 1 
