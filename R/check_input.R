@@ -83,16 +83,16 @@ check.input <- function(ds, move, start, print, level) {
   hzfn <- ds$hazardfn
   pass <- TRUE
   if (!is.numeric(hzfn) |
-      !(hzfn %in% c(1, 2))) pass <- FALSE
+      !(hzfn %in% c(0, 1, 2, 3, 4))) pass <- FALSE
   if (!pass) {
-    stop("ds$hazardfn must be 1 or 2.")
+    stop("ds$hazardfn must be 0-4.")
   }
   # move 
   ds.move <- ds$move 
   pass <- TRUE
-  if (!(ds.move %in% c(0, 1, 2))) pass <- FALSE
+  if (!(ds.move %in% c(0, 1))) pass <- FALSE
   if (!pass) {
-    stop("ds$move must be 0, 1, or 2.")
+    stop("ds$move must be 0 or 1.")
   }
   
   ## check move 

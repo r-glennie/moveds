@@ -299,73 +299,185 @@ double CalcHazard(const double x,
                   const int type,
                   const int hzfn) {
   double hazard = 0;
-  double r0, r1, abeta, y1;
-  double c; 
+  double r0, r1, abeta, abeta2, y1;
+  double s, sx, sy, d, c, k; 
   switch(hzfn) {
-
-  case 1:
-    // Hayes and Buckland isotropic h(r) = cr^(-d)
-    // parameter = (c, d)
+  case 0:
+    // Hayes and Buckland isotropic h(r) = (r/s)^(-2)
+    // parameter = (s, d)
+    s = parameter(0); 
+    d = 2; 
+    c = pow(s, d); 
     r0 = x * x + y * y;
     if (type == 1) {
-      c = pow(parameter(0), parameter(1)); 
-      hazard = dt * c / pow(r0, 0.5 * parameter(1));
+      hazard = dt * c / pow(r0, 0.5 * d);
     }
     else {
       // assume cannot detect behind observer
-      c = pow(parameter(0), parameter(1)); 
       if (y < 0) return 0;
-      abeta = 0.5 * (parameter(1) - 1.0);
+      abeta = 0.5 * (d - 1.0);
       y1 = y - observer_speed * dt;
       if (y1 < 0) y1 = 0;
       r1 = x * x  + y1 * y1;
       if (r1 < 1e-10) return arma::datum::inf;
       if (fabs(x) < 1e-10) {
-        if (fabs(parameter(1) - 1) < 1e-10) {
+        if (fabs(d - 1) < 1e-10) {
           hazard = log(sqrt(r1)) - log(sqrt(r0));
           hazard *= c;
         } else {
           hazard = 1.0 / pow(r1, abeta) - 1.0 / pow(r0, abeta);
-          hazard *= c / (parameter(1) - 1.0);
+          hazard *= c  / (d - 1.0);
         }
       } else {
         hazard = R::pbeta(x * x / r1, abeta, 0.5, 1, 0) - R::pbeta(x * x / r0,
                           abeta, 0.5, 1, 0);
         hazard *= R::beta(abeta, 0.5) * c / (2.0 * pow(fabs(x),
-                                                  parameter(1) - 1.0));
+                                             d - 1.0));
+      }
+    }
+    return hazard;
+    break;
+  
+  case 1:
+    // Hayes and Buckland isotropic h(r) = (r/s)^(-d)
+    // parameter = (s, d)
+    s = parameter(0); 
+    d = 1 + parameter(1); 
+    c = pow(s, d); 
+    r0 = x * x + y * y;
+    if (type == 1) {
+      hazard = dt * c / pow(r0, 0.5 * d);
+    }
+    else {
+      // assume cannot detect behind observer
+      if (y < 0) return 0;
+      abeta = 0.5 * (d - 1.0);
+      y1 = y - observer_speed * dt;
+      if (y1 < 0) y1 = 0;
+      r1 = x * x  + y1 * y1;
+      if (r1 < 1e-10) return arma::datum::inf;
+      if (fabs(x) < 1e-10) {
+        if (fabs(d - 1) < 1e-10) {
+          hazard = log(sqrt(r0)) - log(sqrt(r1));
+          hazard *= c;
+        } else {
+          hazard = 1.0 / pow(r1, abeta) - 1.0 / pow(r0, abeta);
+          hazard *= c / (d - 1.0);
+        }
+      } else {
+        hazard = R::pbeta(x * x / r1, abeta, 0.5, 1, 0) - R::pbeta(x * x / r0,
+                          abeta, 0.5, 1, 0);
+        hazard *= R::beta(abeta, 0.5) * c / (2.0 * pow(fabs(x),
+                                                 d - 1.0)); 
       }
     }
     return hazard;
     break;
 
-  case 2 :
-    // Hayes Buckland anisotropic h(r) = (x^2/sx^2 + y^2/sy^2)^(-d/2)
+  case 2:
+    // Hayes and Buckland anisotropic h(r) = (x^2/sx^2 + y^2/sy^2)^(-d/2)
     // parameter = (sx, sy, d)
+    sx = parameter(0);
+    sy = parameter(1); 
+    d = 1 + parameter(2); 
+    r0 = (x * x) / (sx * sx) + (y * y) / (sy * sy);
     if (type == 1) {
-      hazard = dt * pow(x * x / (parameter(0) * parameter(0)) + y * y / (parameter(1) * parameter(1)), -0.5 * parameter(2));
+      hazard = dt * pow(r0, -0.5 * d); 
     }
     else {
       // assume cannot detect behind observer
       if (y < 0) return 0;
-      if ((x < 1e-10) & (y < 1e-10)) return arma::datum::inf;
-      abeta = 0.5 * (parameter(2) - 1.0);
+      abeta = 0.5 * (d - 1.0);
       y1 = y - observer_speed * dt;
       if (y1 < 0) y1 = 0;
+      r1 = (x * x) / (sx * sx)  + (y1 * y1) / (sy * sy);
+      if (r1 < 1e-10) return arma::datum::inf;
       if (fabs(x) < 1e-10) {
-        if (fabs(parameter(1) - 1) < 1e-10) {
-          hazard = log(y) - log(y1);
-          hazard *= pow(parameter(1), parameter(2));
+        if (fabs(d - 1) < 1e-10) {
+          hazard = log(sqrt(y)) - log(sqrt(y1));
+          hazard *= pow(sy, d);
         } else {
-          hazard = 1.0 / pow(y1, 2 * abeta) - 1.0 / pow(y, 2 * abeta);
-          hazard *= pow(parameter(1), parameter(2)) / (parameter(2) - 1.0);
+          hazard = 1.0 / pow(y1, abeta) - 1.0 / pow(y, abeta);
+          hazard *= pow(sy, d) / (d - 1.0);
         }
       } else {
-        r1 = parameter(1) * parameter(1) * x * x;
-        r0 = r1 / (parameter(1) * parameter(1) * x * x + parameter(0) * parameter(0) * y * y);
-        r1 = r1 / (parameter(1) * parameter(1) * x * x + parameter(0) * parameter(0) * y1 * y1);
-        hazard = R::pbeta(r1, abeta, 0.5, 1, 0) - R::pbeta(r0, abeta, 0.5, 1, 0);
-        hazard *= R::beta(abeta, 0.5) * parameter(1) * pow(parameter(0), parameter(2) - 1.0) /
-          (2.0 * pow(fabs(x), parameter(2) - 1.0));
+        hazard = R::pbeta(x * x / (sx * sx * r1), abeta, 0.5, 1, 0) - R::pbeta(x * x / (sx * sx * r0),
+                          abeta, 0.5, 1, 0);
+        hazard *= R::beta(abeta, 0.5) * pow(sx, d - 1) * sy / (2.0 * pow(fabs(x),
+                                             d - 1.0));
+      }
+    }
+    return hazard;
+    break;
+    
+  case 3:
+    // Hayes and Buckland shape-anisotropic h(r) = (x^2+(y+k)^2)^(-d/2)
+    // parameter = (s, d, k)
+    s = parameter(0); 
+    d = 1 + parameter(1); 
+    k = parameter(2); 
+    c = pow(s, d); 
+    r0 = x * x / (s * s) + (y / s + k) * (y / s + k); 
+    if (type == 1) {
+      hazard = dt * c * (1 + k * y / sqrt(r0)) / pow(r0, 0.5 * d);
+    }
+    else {
+      // assume cannot detect behind observer
+      if (y < 0) return 0;
+      abeta = 0.5 * (d - 1.0);
+      y1 = y - observer_speed * dt;
+      if (y1 < 0) y1 = 0;
+      r1 = x * x / (s * s) + (y1 / s + k) * (y1 / s + k); 
+      if (r1 < 1e-10) return arma::datum::inf;
+      if (fabs(x) < 1e-10) {
+        if (fabs(d - 1) < 1e-10) {
+          hazard = log(sqrt(y + s * k)) - log(sqrt(y1 + s * k));
+          hazard *= c;
+        } else {
+          hazard = 1.0 / pow(y1 + s * k, abeta) - 1.0 / pow(y + s * k, abeta);
+          hazard *= c / (d - 1.0);
+        }
+      } else {
+        hazard = R::pbeta(x * x / (s * s * r1), abeta, 0.5, 1, 0) - R::pbeta(x * x / (s * s * r0),
+                          abeta, 0.5, 1, 0);
+        hazard *= R::beta(abeta, 0.5) * c / (2.0 * pow(fabs(x), d - 1.0)); 
+      }
+    }
+    return hazard;
+    break;
+    
+  case 4:
+    // Hayes and Buckland anisotropic h(r) = (x^2/sx^2 + (y/sy + k)^2)^(-d/2)
+    // parameter = (sx, sy, d, k)
+    sx = parameter(0);
+    sy = parameter(1); 
+    d = 1 + parameter(2);
+    k = parameter(3); 
+    r0 = (x * x) / (sx * sx) + pow(y / sy + k, 2.0); 
+    if (type == 1) {
+      hazard = dt * pow(r0, -0.5 * d); 
+    }
+    else {
+      // assume cannot detect behind observer
+      if (y < 0) return 0;
+      abeta = 0.5 * (d - 1.0);
+      y1 = y - observer_speed * dt;
+      if (y1 < 0) y1 = 0;
+      r1 = (x * x) / (sx * sx)  + pow(y1 / sy + k, 2.0); 
+      if (r1 < 1e-10) return arma::datum::inf;
+      if (fabs(x) < 1e-10) {
+        if (fabs(d - 1) < 1e-10) {
+          hazard = log(sqrt(y)) - log(sqrt(y1));
+          hazard *= pow(sy, d);
+        } else {
+          hazard = 1.0 / pow(y1, abeta) - 1.0 / pow(y, abeta);
+          hazard *= pow(sy, d) / (d - 1.0);
+        }
+      } else {
+        hazard = R::pbeta(x * x / (sx * sx * r1), abeta, 0.5, 1, 0) - R::pbeta(x * x / (sx * sx * r0),
+                          abeta, 0.5, 1, 0);
+        hazard *= R::beta(abeta, 0.5) * pow(sx, d - 1) * sy / (2.0 * pow(fabs(x),
+                                            d - 1.0));
       }
     }
     return hazard;
@@ -421,7 +533,7 @@ arma::rowvec CalcSurvivalPr(const int t,
           ix = x + (i * delta(0)) / nint; 
           //iy = y + (j * delta(0)) / nint; 
           pr_survive(s) += CalcHazard(ix, y, delta(1), observer_speed, parameter, type, hzfn);
-        //}
+       // }
       }
       //pr_survive(s) /= 1.0*nint*nint; 
       pr_survive(s) /= 1.0*nint; 
@@ -480,7 +592,7 @@ double CalcHazardDetected(const arma::mat data,
                           double observer_speed,
                           int type,
                           const int hzfn) {
-  arma::vec r;
+  arma::vec r2, cosang;
   arma::vec t_remaining = data.col(4) - floor((data.col(4)) / dt) * dt;
   double log_hazard = 0;
   for (int i = 0; i < data.n_rows; ++i) {
@@ -488,18 +600,48 @@ double CalcHazardDetected(const arma::mat data,
 		    observer_speed, t_remaining(i), observer_speed, parameter, type, hzfn);
   }
 
+  double s, sx, sy, d, c, k; 
   switch(hzfn) {
+  case 0:
+    s = parameter(0); 
+    d = 2; 
+    c = pow(s, d); 
+    r2 = sum(data.cols(2, 3) % data.cols(2, 3), 1);
+    log_hazard += arma::accu(log(c) - 0.5 * d * log(r2));
+    break;
+  
   case 1:
-    r = sum(data.cols(2, 3) % data.cols(2, 3), 1);
-    log_hazard += arma::accu(parameter(1) * log(parameter(0)) - 0.5 * parameter(1) * log(r));
+    s = parameter(0); 
+    d = 1 + parameter(1); 
+    c = pow(s, d); 
+    r2 = sum(data.cols(2, 3) % data.cols(2, 3), 1);
+    log_hazard += arma::accu(log(c) - 0.5 * d * log(r2));
    break;
 
   case 2:
-    r = data.col(2) % data.col(2) / (parameter(0) * parameter(0));
-    r += data.col(3) % data.col(3) / (parameter(1) * parameter(1));
-    log_hazard += arma::accu(-0.5 * parameter(2) * log(r));
+    sx = parameter(0); 
+    sy = parameter(1); 
+    d = 1 + parameter(2);
+    log_hazard += -0.5 * d * arma::accu(log(data.col(2) % data.col(2) / (sx * sx) + data.col(3) % data.col(3) / (sy * sy))); 
     break;
 
+  case 3:
+    s = parameter(0); 
+    d = 1 + parameter(1);
+    k = parameter(2); 
+    r2 = data.col(2) % data.col(2) / (s * s) + pow(data.col(3) / s + k, 2.0); 
+    log_hazard += arma::accu(- 0.5 * d * log(r2));
+    break;
+    
+  case 4:
+    sx = parameter(0); 
+    sy = parameter(1); 
+    d = 1 + parameter(2);
+    k = parameter(3); 
+    r2 = data.col(2) % data.col(2) / (sx * sx) + pow(data.col(3) / sy + k, 2.0); 
+    log_hazard += arma::accu(- 0.5 * d * log(r2));
+    break;
+    
   default:
     Rcpp::Rcout << "error: no hazard specified." << std::endl;
     return -arma::datum::inf;
