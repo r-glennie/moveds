@@ -1,5 +1,6 @@
 useDynLib(moveds)
 importFrom("Rcpp", "evalCpp")
+importFrom("goftest", "cvm.test")
 importFrom("mgcv", "gam")
 importFrom("mgcv", "predict.gam")
 importFrom("mgcv", "s")
