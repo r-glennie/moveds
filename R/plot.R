@@ -47,14 +47,14 @@ plot.mds <- function(x, delta = NULL, yquant = 0.95, nint = 1000, ...) {
     x.pdf <- rowSums(pdfm)
     y.pdf <- colSums(pdfm)
     xrange <- seq(0, range[1], length = nint)
-    xgrid <- seq(-ds$aux[3], ds$aux[3] - ds$delta[1], by = delta[1])
+    xgrid <- seq(-ds$aux[3] + 0.5 * ds$delta[1], ds$aux[3] - 0.5 * ds$delta[1], by = delta[1])
     # perp plot
     if (length(x.pdf) > length(xgrid)) x.pdf <- x.pdf[-1]
-    gamdat <- data.frame(x = xgrid, y = x.pdf)
+    gamdat <- data.frame(x = xgrid, y = log(x.pdf+1e-10))
     k <- nrow(gamdat)
     xgam <- gam(y ~ s(x, k = k, fx = TRUE), data = gamdat) 
     x.sp0 <- function(r) {predict(xgam, newdata = data.frame(x = r))}
-    x.sp <- function(x) {pmax(0, x.sp0(x))}
+    x.sp <- function(x) {exp(x.sp0(x))}
     int <- integrate(x.sp, 0, range[1])$value
     x.spy <- x.sp(xrange)
     x.spy <- x.spy / int
@@ -79,11 +79,11 @@ plot.mds <- function(x, delta = NULL, yquant = 0.95, nint = 1000, ...) {
     yrange <- yrange[yrange <= range[2]]
     y.pdf <- y.pdf[ygrid <= range[2]]
     ygrid <- ygrid[ygrid <= range[2]]
-    gamdat <- data.frame(x = ygrid, y = y.pdf)
+    gamdat <- data.frame(x = ygrid, y = log(y.pdf+1e-10))
     k <- nrow(gamdat)
     ygam <- gam(y ~ s(x, k = k, fx=TRUE), data = gamdat) 
     y.sp0 <- function(r) {predict(ygam, newdata = data.frame(x = r))}
-    y.sp <- function(y) {pmax(0, y.sp0(y))}
+    y.sp <- function(y) {exp(y.sp0(y))}
     y.spy <- y.sp(yrange)
     int <- integrate(y.sp, 0, range[2])$value
     y.spy <- y.spy / int
@@ -111,11 +111,11 @@ plot.mds <- function(x, delta = NULL, yquant = 0.95, nint = 1000, ...) {
     x.vals <- rep(xgrid, length(ygrid))
     y.vals <- rep(ygrid, each = length(xgrid))
     r.vals <- sqrt(x.vals^2 + y.vals^2)
-    gamdat <- data.frame(x = r.vals, y = r.vals * as.vector(pdfm))
+    gamdat <- data.frame(x = r.vals, y = log(r.vals) + as.vector(log(pdfm)))
     k <- length(xgrid)
     fitgam <- gam(y ~ s(x, k = k, fx=TRUE), data = gamdat) 
     r.sp0 <- function(r) {predict(fitgam, newdata = data.frame(x = r))}
-    r.sp <- function(r) {pmax(0, r.sp0(r))}
+    r.sp <- function(r) {exp(r.sp0(r))}
     rrange <- seq(0,ds$aux[3])
     r.spy <- r.sp(rrange) 
     int <- integrate(r.sp, 0, ds$aux[3])$value 
