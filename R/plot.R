@@ -4,9 +4,10 @@
 #' @param delta use a different (dx, dt); otherwise uses mod$ds$delta
 #' @param yquant maximum y distance quantile to plot up to
 #' @param nint discrete spacing to plot approximating spline with
+#' @param extract if TRUE then predicted density for x-y distances 
 #' @param ... ignored 
 #' @export
-plot.mds <- function(x, delta = NULL, yquant = 0.95, nint = 1000, ...) {
+plot.mds <- function(x, delta = NULL, yquant = 0.95, nint = 1000, extract = FALSE, ...) {
   mod <- x
   ds <- mod$ds
   if (!is.null(delta)) ds$delta <- delta
@@ -42,6 +43,7 @@ plot.mds <- function(x, delta = NULL, yquant = 0.95, nint = 1000, ...) {
   buf <- floor(ds$buffer / delta[1])
   pdfm <- matrix(pdf, nrow = dis$numcells[2], Nforw)
   pdfm <- pdfm[buf:(Nperp+buf),]
+  if (extract) return(pdfm/sum(pdfm))
   # line transect
   if (ds$aux[5] == 0) {
     x.pdf <- rowSums(pdfm)
