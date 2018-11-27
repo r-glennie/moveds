@@ -1,4 +1,4 @@
-#' Fit distance sampling with movement model
+#' Predict abundance from fitted distance sampling model for transects
 #'
 #' @param object fitted mds model 
 #' @param newdata if NULL then predicted abundance for all covered area, 
