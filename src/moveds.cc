@@ -306,7 +306,7 @@ double CalcHazard(const double x,
     // Hayes and Buckland isotropic h(r) = (r/s)^(-2)
     // parameter = (s, d)
     s = parameter(0); 
-    d = 2; 
+    d = 1; 
     c = pow(s, d); 
     r0 = x * x + y * y;
     if (type == 1) {
@@ -604,7 +604,7 @@ double CalcHazardDetected(const arma::mat data,
   switch(hzfn) {
   case 0:
     s = parameter(0); 
-    d = 2; 
+    d = 1; 
     c = pow(s, d); 
     r2 = sum(data.cols(2, 3) % data.cols(2, 3), 1);
     log_hazard += arma::accu(log(c) - 0.5 * d * log(r2));
@@ -1061,6 +1061,7 @@ arma::mat GetHist(const arma::vec working_parameter,
   int Nperp = floor(2 * range(0) / dx);
   int Nforw = floor(range(1) / dx);
   arma::rowvec count(num_cells(1) * Nforw); count.zeros();
+  arma::rowvec accum(num_cells(1) * Nforw); accum.zeros();
   // nalive is the number of transect still being surveyed in the meta-transect
   int nalive = num_transects;
   // calculate initial probability in each grid cell
@@ -1077,6 +1078,7 @@ arma::mat GetHist(const arma::vec working_parameter,
     flux = 1.0 - flux;
   }
   double num_boundary_states = floor(prod(region_size) / (dx * dx)) - num_cells(0);
+  arma::rowvec intrans = InTransect(num_cells, strip_size, dx, auxiliary_data(2), ymax, buffer, transect_type); 
   // intialise variables
   int endtime = transdat(curtrans, 2);
   accu_hazard = 0;
@@ -1091,11 +1093,11 @@ arma::mat GetHist(const arma::vec working_parameter,
     if (smax >= num_cells(0)) smax = num_cells(0) - 1;
     if (sobs >= num_cells(0)) sobs = num_cells(0) - 1;
     // add in all animals present in cell
-    count.cols(0, smax - sobs) += nalive * exp(log(pr_t.cols(sobs, smax)) + accu_hazard);
+    count.cols(0, smax - sobs) += exp(log(pr_t.cols(sobs, smax) % intrans.cols(sobs, smax)) + accu_hazard);
     // thin pr_t by those that are detected
     pr_t = Detect(t, pr_t, parameter, num_cells, delta, strip_size, buffer, observer_speed, transect_type, hzfn);
     // subtract those animals still present (failed to be detected)
-    count.cols(0, smax - sobs) -= nalive * exp(log(pr_t.cols(sobs, smax)) + accu_hazard);
+    count.cols(0, smax - sobs) -= exp(log(pr_t.cols(sobs, smax) % intrans.cols(sobs, smax)) + accu_hazard);
     if (move_method > 0) {
       old_pr_t = pr_t;
       // move animals that are inside strip
@@ -1113,6 +1115,7 @@ arma::mat GetHist(const arma::vec working_parameter,
     pr_outside /=  pr_survived;
     // if transect ends divide by conditional probability
     while (endtime == t) {
+      accum += count; 
       --nalive;
       ++curtrans;
       if (curtrans > transdat.n_rows - 1) {
@@ -1122,5 +1125,5 @@ arma::mat GetHist(const arma::vec working_parameter,
       }
     }
   }
-  return count;
+  return accum;
 }
