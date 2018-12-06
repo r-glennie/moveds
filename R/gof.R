@@ -19,7 +19,7 @@ mds.gof <- function(mod, delta = NULL, yquant = 0.95, nint = 1000) {
   ddata <- dis$ddata
   move.method <- ds$move
   if (move.method != 0) move.method <- 1
-  range <- c(ds$aux[3], max(ds$data$y) + delta[1])
+  range <- c(ds$aux[3], max(ds$transect[,2]))
   # compute expected proportion of counts
   npar <- nrow(mod$result)
   wpar <- Natural2Working(mod$result[-((npar-1):npar),1], ds$hazardfn)
