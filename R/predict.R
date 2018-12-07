@@ -36,6 +36,10 @@ predict.mds <- function(object,
   move.method <- ds$move
   # discretise transects and data
   dis <- Discretise(ds)
+  # set ymax same across strata 
+  type <- ds$aux[5]
+  if (type == 0) dis$ymax <- max(mds$ds$transect[,2])
+  if (type == 1) dis$ymax <- 2 * ds$aux[3]
   dtrans <- dis$dtrans
   ddata <- dis$ddata
   fixed.sd <- 0

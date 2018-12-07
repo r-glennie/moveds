@@ -1,0 +1,18 @@
+citHeader("To cite moveds in publications use:")
+
+citEntry(entry = "Article",
+         title        = "Incorporating animal movement into distance sampling",
+         author       = personList(as.person("Glennie, R"), as.person("Buckland, S. T"), as.person("Langrock, R."), as.person("Gerrodette T."), as.person("Ballance, L. T."), as.person("Chivers, S. J."),as.person("Scott, M. D."), 
+         as.person("Perrin, W. F.")),
+         journal      = "Preprint",
+         year         = "2018",
+         volume       = "-",
+         number       = "-",
+         doi          = "http://hdl.handle.net/10023/11757",
+         
+         textVersion  =
+           paste("Glennie, R., Buckland, S. T., Langrock, R., Gerrodette, T., Ballance, L. T., Chivers, S. J, Scott, M. D. and Perrin, W. F, (2017).",
+                 "Incorporating animal movement into distance sampling",
+                 "Preprint, University of St Andrews",
+                 "http://hdl.handle.net/10023/11757")
+)
