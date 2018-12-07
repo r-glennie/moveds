@@ -42,12 +42,12 @@ summary.mds <- function(object, ...) {
 s2sigmab <- function(s, d, v = 1, T = 1) {
   if (v > 0) {
     b <- d
-    c <- s^d / v
+    c <- s^(1 + d) / v
     sigma <- c * 2 / beta(b/2, 1/2) 
     sigma <- sigma^(1/b)
   } else {
     b <- d 
-    sigma <- s * T^(1/d)
+    sigma <- s * T^(1/(1 + d))
   }
   return(c(b = b, sigma = sigma))
 }
