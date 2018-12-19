@@ -34,11 +34,12 @@ summary.mds <- function(object, ...) {
 #'
 #' @param s scale parameter
 #' @param d shape parameter 
+#' @param v observer speed, default is one, if zero then point transect assumed
 #' @param T duration of point transect
 #'
 #' @return named vector of shape (b) and scale (sigma) under Hayes-Buckland 
 #' @export
-s2sigmab <- function(s, d, T = 1) {
+s2sigmab <- function(s, d, v = 1, T = 1) {
   if (v > 0) {
     b <- d
     c <- s^(1 + d)
